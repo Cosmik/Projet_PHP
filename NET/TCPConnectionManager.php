@@ -12,6 +12,13 @@ class TCPConnectionManager
 {
 	public $clients = array();
 
+	/*
+	* Enregistre un socket entrant qui est lié à l'utilisateur
+	*
+	* @params resource Socket $socketClient instance du socket_accept()
+	*
+	* @return Affichage sur console de la connexion entrante
+	*/
 	public function AddClient($socketClient)
 	{
 		// On vérifie qu'il n'existe pas de ressource identique
@@ -22,9 +29,16 @@ class TCPConnectionManager
 		if(!in_array($socketClient, $this->clients))
 			array_push($this->clients, $socketClient);
 
-		printf("[%s] >> Added user from %s\n", __FUNCTION__, $socketClient);
+		\ProjetNameEnvironment\Logging\Logging::WriteLine("[%s] >> Added user from %s", array(__FUNCTION__, $socketClient));
 	}
 
+	/*
+	* Suppresion d'un socket entrant qui est lié à l'utilisateur
+	*
+	* @params resource Socket $socketClient instance du socket_accept()
+	*
+	* @return Affichage de la suppresion de la connexion
+	*/
 	public function RemoveClient($socketClient)
 	{
 		// On vérifie que la ressource existe bien avant de la supprimer
@@ -38,7 +52,7 @@ class TCPConnectionManager
 		// On ferme la connexion aux serveurs
 		socket_close($socketClient);
 
-		printf("[%s] >> Removed user from %s\n", __FUNCTION__, $socketClient);
+		\ProjetNameEnvironment\Logging\Logging::WriteLine("[%s] >> Removed user from %s", array(__FUNCTION__, $socketClient));
 	}
 
 	/* GETTERS // SETTERS */

@@ -12,7 +12,7 @@ function LoadEnvironment()
 {
 	try
 	{
-		$folders = array("NET");
+		$folders = array("NET", "Logging");
 		$fileIncluded = array();
 		foreach($folders as $folderName)
 		{
@@ -48,11 +48,10 @@ function LoadEnvironment()
 }
 LoadEnvironment();
 
-use ProjetNameEnvironment\NET\TCPConnectionManager\TCPConnectionManager as TCPConnectionManager;
+use ProjetNameEnvironment\Logging\Logging as Logging;
 use ProjetNameEnvironment\NET\TCPConnection\TCPConnection as TCPConnection;
 
 $tcpConnection = new TCPConnection();
-$tcpConnectionManager = new TCPConnectionManager();
 $tcpConnection->InitializeSocket("127.0.0.1", 3001);
 
 while(is_resource($tcpConnection->socketMaster))

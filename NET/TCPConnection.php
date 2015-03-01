@@ -13,6 +13,14 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 	public $socketMaster = null;
 	public static $socketListener = array();
 
+	/*
+	* Démarre une instance socket pour intercepter les connexions entrantes.
+	*
+	* @params: string $adressIP
+	* @params: int $port
+	*
+	* @return Affection de l'instance socket dans la variable $socketMaster
+	*/
 	public function InitializeSocket($addressIP, $port)
 	{
 		try
@@ -30,39 +38,52 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 		{
 			if($this->socketMaster != null)
 			{
-				printf("[%s] > Le serveur ecoute sur le port %s:%s\n", __FUNCTION__, $addressIP, $port);
+				\ProjetNameEnvironment\Logging\Logging::WriteLine("[%s] > Le serveur ecoute sur le port %s:%s", array(__FUNCTION__, $addressIP, $port));
 				array_push(self::$socketListener, $this->socketMaster);
 			}
 			else
-				printf("[%s] Le serveur n'a pas pu demarrer, merci de verifier les logs d'erreurs\n", __FUNCTION__);
+				\ProjetNameEnvironment\Logging\Logging::WriteLine("[%s] Le serveur n'a pas pu demarrer, merci de verifier les logs d'erreurs", array( __FUNCTION__));
 
 		}
 	}
 
+	/*
+	* Ecoute et traite les sockets entrantes
+	*
+	* @return Traitement des packets
+	*/
 	public function Listener()
 	{
 		$read = self::$socketListener;
+		socket_select($read, $write = null, $except = null, null);
 
-		if (socket_select($read, $write = NULL, $except = NULL, 0) >= 1)
+		
+		foreach($read as $socketIncoming)
 		{
-			foreach($read as $socketIncoming)
-			{
-		        if(in_array($this->socketMaster, $read))
-		        {
-		        	$newClient = socket_accept($this->socketMaster);
+			if(in_array($this->socketMaster, $read))
+		    {
+		    	$newClient = socket_accept($this->socketMaster);
 
-		        	if(is_resource($newClient) && $newClient > 0)
-		        		parent::AddClient($newClient);
-		        	else
-		        		continue;
-		       	}
+		        if(is_resource($newClient) && $newClient > 0)
+		        	parent::AddClient($newClient);
+		        else
+		        	continue;
+		    }
+		    else
+		    {
+		    	if(socket_recv($socketIncoming, $buffer, 2048, 0) <= 0)
+		        	parent::RemoveClient($socketIncoming);
 		        else
 		        {
-		        	if(socket_recv($socketIncoming, $buffer, 2048, 0) <= 0)
-		        		parent::RemoveClient($socketIncoming);
-		        	else
+		        	\ProjetNameEnvironment\Logging\Logging::WriteLine("[%s] >> %s", array(__FUNCTION__, $buffer));
+
+		        	if(substr($buffer, 0, 22) == "<policy-file-request/>")
 		        	{
-		        		printf("[INCOMING PACKET] %s\n", $buffer);
+		        		\ProjetNameEnvironment\Logging\Logging::WriteLine("%s", array($buffer));
+		        	}
+		        	else if(substr($buffer, 0, 4) == "@MUS")
+		        	{
+
 		        	}
 		        }
 	    	}
