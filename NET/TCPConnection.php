@@ -78,7 +78,12 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 
 		        	if(substr($buffer, 0, 22) == "<policy-file-request/>")
 		        	{
-		        		\ProjetNameEnvironment\Logging\Logging::WriteLine("%s", array($buffer));
+		        		$buff = '<?xml version="1.0"?>
+								<!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
+								<cross-domain-policy>
+								<allow-access-from domain="*" to-ports="1-31111" />
+								</cross-domain-policy>'.chr(0);
+		        		socket_write($socketIncoming, $buff, strlen($buff));
 		        	}
 		        	else if(substr($buffer, 0, 4) == "@MUS")
 		        	{
