@@ -32,7 +32,7 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 		}
 		catch(Exception $error)
 		{
-
+			\ProjetNameEnvironment\Logging\Logging::WriteError($error->getMessage());
 		}
 		finally
 		{
@@ -57,7 +57,6 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 		$read = self::$socketListener;
 		socket_select($read, $write = null, $except = null, null);
 
-		
 		foreach($read as $socketIncoming)
 		{
 			if(in_array($this->socketMaster, $read))
@@ -83,7 +82,7 @@ class TCPConnection extends \ProjetNameEnvironment\NET\TCPConnectionManager\TCPC
 		        	}
 		        	else if(substr($buffer, 0, 4) == "@MUS")
 		        	{
-
+		        		
 		        	}
 		        }
 	    	}

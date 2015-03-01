@@ -12,7 +12,7 @@ function LoadEnvironment()
 {
 	try
 	{
-		$folders = array("NET", "Logging");
+		$folders = array("NET", "Logging", "DatabaseManager");
 		$fileIncluded = array();
 		foreach($folders as $folderName)
 		{
@@ -50,12 +50,19 @@ LoadEnvironment();
 
 use ProjetNameEnvironment\Logging\Logging as Logging;
 use ProjetNameEnvironment\NET\TCPConnection\TCPConnection as TCPConnection;
+use ProjetNameEnvironment\DatabaseManager\Database\Database as Database;
+
+Logging::SetTitle("ProjetName est entrain de demarrer..");
 
 $tcpConnection = new TCPConnection();
 $tcpConnection->InitializeSocket("127.0.0.1", 3001);
 
+$database = new Database();
+$database->start();
+
 while(is_resource($tcpConnection->socketMaster))
 {
 	$tcpConnection->Listener();
+	echo "ok";
 }
 ?>
